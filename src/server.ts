@@ -1,13 +1,14 @@
-import express, {Express, Request, Response} from 'express';
+import dotenv from "dotenv";
+dotenv.config();
+import express, { Express } from "express";
+import router from "./routes/common.route";
 
 let app: Express = express();
-let PORT: number = 8080;
+let PORT: any = process.env.PORT || 8080;
 
-app.get('/', (request: Request, response: Response) => {
-    response.status(200).json({message: "all good"});
-});
+app.use(express.json());
+app.use("/api", router);
 
 app.listen(PORT, () => {
-    console.log('app is running');
-    
-})
+  console.log(`app is running in port:${PORT}`);
+});
