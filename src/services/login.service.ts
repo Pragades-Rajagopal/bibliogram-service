@@ -66,7 +66,7 @@ export const verifyCredential = async (
  * @returns {Promise}
  */
 const getPrivateKey = (username: string): Promise<any> => {
-  const sql = `SELECT private_key FROM users WHERE username=?`;
+  const sql = `SELECT private_key FROM users WHERE username=? AND _status=1`;
   return new Promise((resolve, reject) => {
     appDB.all(sql, [username], (err, data) => {
       if (err) {

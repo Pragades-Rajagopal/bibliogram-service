@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS users(
     fullname TEXT NOT NULL,
     username TEXT NOT NULL UNIQUE,
     private_key TEXT,
+    _status INTEGER CHECK( _status IN (0, 1) ) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL
 );
 

@@ -101,14 +101,15 @@ const saveUserModel = (data: userModel.ISaveUserRequest): Promise<any> => {
   const currentTime = moment()
     .utcOffset("+05:30")
     .format("YYYY-MM-DD HH:mm:ss");
+  const status = 1;
   const sql = `
-    INSERT INTO users (fullname, username, private_key, created_on)
-    VALUES (?,?,?,?)
+    INSERT INTO users (fullname, username, private_key, _status, created_on)
+    VALUES (?,?,?,?,?)
   `;
   return new Promise((resolve, reject) => {
     appDB.run(
       sql,
-      [data.fullname, data.username, data.privateKey, currentTime],
+      [data.fullname, data.username, data.privateKey, status, currentTime],
       (err: any) => {
         if (err) {
           console.error("error while saving the user");
@@ -143,7 +144,7 @@ const saveUserModel = (data: userModel.ISaveUserRequest): Promise<any> => {
 const getUserInfo = (username: string): Promise<any> => {
   const sql = `
     SELECT username, fullname FROM users 
-    WHERE username = ?
+    WHERE username=? and _status=1
   `;
   return new Promise((resolve, reject) => {
     appDB.all(sql, [username], (err, data) => {
