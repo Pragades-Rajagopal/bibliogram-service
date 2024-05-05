@@ -46,6 +46,12 @@ export const registerUser = async (
   }
 };
 
+/**
+ * User login component
+ * @param {Request} request 
+ * @param {Response} response 
+ * @returns {Promise}
+ */
 export const userLogin = async (
   request: Request,
   response: Response
@@ -84,6 +90,34 @@ export const userLogin = async (
       statusCode: constants.statusCode.serverError,
       message: null,
       error: error.message,
+    });
+  }
+};
+
+export const deactivateUser = async (
+  request: Request | any,
+  response: Response
+): Promise<Response> => {
+  try {
+    const tokenData = request["user"];
+    const { userId } = request.body;
+    if(tokenData["id"] != userId) {
+      return response.status(constants.statusCode.unauthorized).json({
+        statusCode: constants.statusCode.unauthorized,
+        message: constants.commonServerError.forbidden,
+      });
+    }
+    await deactivateUserModel(userId);
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.user.deactivationSuccess,
+    });
+  } catch (error: any) {
+    console.error(constants.user.deactivationError);
+    console.error(error);
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: constants.user.deactivationError,
     });
   }
 };
@@ -143,7 +177,7 @@ const saveUserModel = (data: userModel.ISaveUserRequest): Promise<any> => {
  */
 const getUserInfo = (username: string): Promise<any> => {
   const sql = `
-    SELECT username, fullname FROM users 
+    SELECT id, username, fullname FROM users 
     WHERE username=? and _status=1
   `;
   return new Promise((resolve, reject) => {
@@ -197,6 +231,33 @@ const saveUserLogin = (username: string, token: string): Promise<any> => {
       if (err) {
         reject("error at saveUserLogin method");
         console.log(err);
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Save user info to deactivated user model upon deactivation
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const deactivateUserModel = (userId: string): Promise<any> => {
+  const sql = `
+      INSERT INTO deactivated_users (
+        uid, fullname, username, deactivated_on, usage_days
+      ) SELECT id, fullname, username,
+      DATETIME(CURRENT_TIMESTAMP, 'localtime') ,
+      CAST(JULIANDAY(DATE('now')) - JULIANDAY(DATE("created_on")) AS INTEGER)
+      FROM users u 
+      WHERE u.id=?
+  `;
+  return new Promise((resolve, reject): any => {
+    appDB.run(sql, [userId], (err) => {
+      if (err) {
+        console.log(err);
+        reject("error at deactivateUserModel method");
       } else {
         resolve("success");
       }

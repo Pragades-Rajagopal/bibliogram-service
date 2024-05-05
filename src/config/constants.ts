@@ -15,6 +15,8 @@ export default {
     registered: "User registered successfully",
     notRegistered: "User not registered",
     invalidAuth: "Private key is not correct",
+    deactivationSuccess: "User successfully deactivated",
+    deactivationError: "Error while deactivating user",
   },
   authenticationMessage: {
     tokenMissing: "Please send auth token in request header",
