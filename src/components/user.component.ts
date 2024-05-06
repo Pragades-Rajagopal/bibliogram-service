@@ -108,9 +108,10 @@ export const deactivateUser = async (
       });
     }
     await Promise.all([
-      deactivateUserModel(userId),
       deleteCommentsOfUser(userId),
       deleteBookNotesOfUser(userId),
+      deactivateUserModel(userId),
+      deleteUser(userId),
     ]);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
