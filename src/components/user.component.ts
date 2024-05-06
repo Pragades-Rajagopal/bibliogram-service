@@ -94,6 +94,32 @@ export const userLogin = async (
   }
 };
 
+/**
+ * User logout component
+ * @param {Request} request
+ * @param {Response} response
+ * @returns {Promise}
+ */
+export const userLogout = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const username = request.body.username;
+    await saveUserLogout(username);
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.user.logoutSuccess,
+    });
+  } catch (error: any) {
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: null,
+      error: error.message,
+    });
+  }
+};
+
 export const deactivateUser = async (
   request: Request | any,
   response: Response
@@ -236,6 +262,31 @@ const saveUserLogin = (username: string, token: string): Promise<any> => {
       if (err) {
         reject("error at saveUserLogin method");
         console.log(err);
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Updates logout time for logged out user
+ * @param {string} username
+ * @returns {Promise}
+ */
+const saveUserLogout = (username: string): Promise<any> => {
+  const currentTime = moment()
+    .utcOffset("+05:30")
+    .format("YYYY-MM-DD HH:mm:ss");
+  const sql = `
+    UPDATE user_login
+    SET logged_out=?
+    WHERE username=?
+  `;
+  return new Promise((resolve, reject) => {
+    appDB.run(sql, [currentTime, username], (err) => {
+      if (err) {
+        reject("error at saveUserLogout method");
       } else {
         resolve("success");
       }

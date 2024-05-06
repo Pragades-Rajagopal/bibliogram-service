@@ -13,5 +13,6 @@ router.post(
   authenticateToken,
   UserComponent.deactivateUser
 );
+router.post("/logout", authenticateToken, UserComponent.userLogout);
 
 export default router;
