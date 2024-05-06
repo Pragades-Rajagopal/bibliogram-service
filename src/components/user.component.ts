@@ -48,8 +48,8 @@ export const registerUser = async (
 
 /**
  * User login component
- * @param {Request} request 
- * @param {Response} response 
+ * @param {Request} request
+ * @param {Response} response
  * @returns {Promise}
  */
 export const userLogin = async (
@@ -101,13 +101,17 @@ export const deactivateUser = async (
   try {
     const tokenData = request["user"];
     const { userId } = request.body;
-    if(tokenData["id"] != userId) {
+    if (tokenData["id"] != userId) {
       return response.status(constants.statusCode.unauthorized).json({
         statusCode: constants.statusCode.unauthorized,
         message: constants.commonServerError.forbidden,
       });
     }
-    await deactivateUserModel(userId);
+    await Promise.all([
+      deactivateUserModel(userId),
+      deleteCommentsOfUser(userId),
+      deleteBookNotesOfUser(userId),
+    ]);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
       message: constants.user.deactivationSuccess,
@@ -258,6 +262,69 @@ const deactivateUserModel = (userId: string): Promise<any> => {
       if (err) {
         console.log(err);
         reject("error at deactivateUserModel method");
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Deletes user upon deactivation
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const deleteUser = (userId: number): Promise<any> => {
+  const sql = `
+    DELETE FROM users WHERE id = ?
+  `;
+  return new Promise((resolve, reject) => {
+    appDB.run(sql, [userId], (err) => {
+      if (err) {
+        reject("error at deleteUser method");
+        console.log(err);
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Deletes book notes upon user deactivation
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const deleteBookNotesOfUser = (userId: number): Promise<any> => {
+  const sql = `
+    DELETE FROM book_notes WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+    appDB.run(sql, [userId], (err) => {
+      if (err) {
+        reject("error at deleteBookNotesOfUser method");
+        console.log(err);
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Deletes comments upon user deactivation
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const deleteCommentsOfUser = (userId: number): Promise<any> => {
+  const sql = `
+    DELETE FROM comments WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+    appDB.run(sql, [userId], (err) => {
+      if (err) {
+        reject("error at deleteCommentsOfUser method");
+        console.log(err);
       } else {
         resolve("success");
       }
