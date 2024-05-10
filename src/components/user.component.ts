@@ -106,6 +106,13 @@ export const userLogout = async (
 ): Promise<Response> => {
   try {
     const username = request.body.username;
+    const isUserLoggedIn = await getUserLoginInfo(username);
+    if (isUserLoggedIn && isUserLoggedIn.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: constants.user.loginNotFound,
+      });
+    }
     await saveUserLogout(username);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
@@ -264,6 +271,24 @@ const saveUserLogin = (username: string, token: string): Promise<any> => {
         console.log(err);
       } else {
         resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Gets the user login info
+ * @param {string} username
+ * @returns {Promise}
+ */
+const getUserLoginInfo = (username: string): Promise<any> => {
+  const sql = `SELECT * FROM user_login WHERE username=?`;
+  return new Promise((resolve, reject) => {
+    appDB.all(sql, [username], (err, data) => {
+      if (err) {
+        reject("error at getUserLoginInfo method");
+      } else {
+        resolve(data);
       }
     });
   });

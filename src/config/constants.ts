@@ -16,6 +16,7 @@ export default {
     notRegistered: "User not registered",
     invalidAuth: "Private key is not correct",
     logoutSuccess: "User logged out successfully",
+    loginNotFound: "User have not logged in yet",
     deactivationSuccess: "User successfully deactivated",
     deactivationError: "Error while deactivating user",
   },
