@@ -1,7 +1,12 @@
 import { Router } from "express";
 const router = Router();
+// Components
 import * as UserComponent from "../components/User";
+import * as BookComponent from "../components/Book";
+// Validations
 import * as userValidations from "../validators/user";
+import * as bookValidations from "../validators/book";
+
 import { authenticateToken } from "../services/middleware";
 
 /**
@@ -24,6 +29,24 @@ router.post(
   authenticateToken,
   userValidations.logoutValidation,
   UserComponent.userLogout
+);
+
+/**
+ * Book routes
+ */
+router.post(
+  "/books",
+  authenticateToken,
+  bookValidations.addBooksValidation,
+  BookComponent.bulkAddBooks
+);
+router.get("/books/:id", authenticateToken, BookComponent.getBookById);
+router.get("/books", authenticateToken, BookComponent.getAllBooks);
+router.delete(
+  "/books",
+  authenticateToken,
+  bookValidations.deleteBooksValidation,
+  BookComponent.deleteBooks
 );
 
 export default router;

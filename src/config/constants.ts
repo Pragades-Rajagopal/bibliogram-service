@@ -39,4 +39,13 @@ export default {
       error: "Error while verifying the private key",
     },
   },
+  books: {
+    addSuccess: "Book(s) added successfully",
+    addFailure: "Error while adding book(s)",
+    found: "Book detail found",
+    notFound: "Book detail not found for the given id or query",
+    getError: "Error while getting book detail",
+    deleteSuccess: "Book(s) deleted successfully",
+    deleteError: "Error while deleting books",
+  },
 };
