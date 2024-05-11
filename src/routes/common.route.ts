@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import * as UserComponent from "../components/user.component";
+import * as UserComponent from "../components/User";
 import * as userValidations from "../validators/user";
 import { authenticateToken } from "../services/middleware";
 

@@ -3,7 +3,7 @@ import appDB from "../connector/database";
 import moment from "moment";
 import * as userModel from "../models/user";
 import constants from "../config/constants";
-import * as loginService from "../services/login.service";
+import * as loginService from "../services/login";
 import * as middleware from "../services/middleware";
 
 /**
