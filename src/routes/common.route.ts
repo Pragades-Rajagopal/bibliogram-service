@@ -3,9 +3,11 @@ const router = Router();
 // Components
 import * as UserComponent from "../components/User";
 import * as BookComponent from "../components/Book";
+import * as BookNoteComponent from "../components/BookNote";
 // Validations
 import * as userValidations from "../validators/user";
 import * as bookValidations from "../validators/book";
+import * as bookNoteValidations from "../validators/bookNote";
 
 import { authenticateToken } from "../services/middleware";
 
@@ -47,6 +49,28 @@ router.delete(
   authenticateToken,
   bookValidations.deleteBooksValidation,
   BookComponent.deleteBooks
+);
+
+/**
+ * Book note routes
+ */
+router.put(
+  "/book-notes",
+  authenticateToken,
+  bookNoteValidations.addOrUpdateValidation,
+  BookNoteComponent.upsertNote
+);
+router.get("/book-notes/:id", authenticateToken, BookNoteComponent.getNote);
+router.get("/book-notes", authenticateToken, BookNoteComponent.getNotesByQuery);
+router.delete(
+  "/book-notes/:id",
+  authenticateToken,
+  BookNoteComponent.deleteNote
+);
+router.get(
+  "/book-notes-visibility/:id/:flag",
+  authenticateToken,
+  BookNoteComponent.updateNoteVisibility
 );
 
 export default router;

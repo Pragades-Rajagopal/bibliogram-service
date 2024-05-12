@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS book_notes (
     user_id INTEGER,
     book_id INTEGER,
     notes TEXT NOT NULL,
+    is_private INTEGER CHECK( is_private IN (0, 1) ) NOT NULL DEFAULT 1,
     created_on DATETIME NOT NULL,
     modified_on DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),

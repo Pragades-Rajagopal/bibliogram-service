@@ -1,0 +1,1 @@
+DROP VIEW book_notes_vw;
