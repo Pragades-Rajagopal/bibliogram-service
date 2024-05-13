@@ -63,4 +63,14 @@ export default {
     updateFlagFailure: "Visibility update failure",
     badRequest: "Flag should be either 'public' or 'private'",
   },
+  comment: {
+    addSuccess: "Comment added successfully",
+    addOrUpdateFailure: "Error while adding/updating comment",
+    found: "Comment found",
+    notFound: "Comment(s) not found for the given id or query",
+    getError: "Error while retrieving comment",
+    updateSuccess: "Comment updated successfully",
+    deleteSuccess: "Comment deleted successfully",
+    deleteFailure: "Error while deleting comment",
+  },
 };

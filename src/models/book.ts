@@ -17,3 +17,11 @@ export interface BookNote {
   created_on: string;
   modified_on: string;
 }
+
+export interface Comment {
+  id: number;
+  userId: number;
+  noteId: number;
+  comment: string;
+  created_on: string;
+}

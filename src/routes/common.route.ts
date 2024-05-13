@@ -4,10 +4,12 @@ const router = Router();
 import * as UserComponent from "../components/User";
 import * as BookComponent from "../components/Book";
 import * as BookNoteComponent from "../components/BookNote";
+import * as CommentComponent from "../components/Comment";
 // Validations
 import * as userValidations from "../validators/user";
 import * as bookValidations from "../validators/book";
 import * as bookNoteValidations from "../validators/bookNote";
+import * as commentValidation from "../validators/comment";
 
 import { authenticateToken } from "../services/middleware";
 
@@ -71,6 +73,23 @@ router.get(
   "/book-notes-visibility/:id/:flag",
   authenticateToken,
   BookNoteComponent.updateNoteVisibility
+);
+
+/**
+ * Comment routes
+ */
+router.put(
+  "/comments",
+  authenticateToken,
+  commentValidation.addOrUpdateValidation,
+  CommentComponent.upsertComment
+);
+router.get("/comments/:id", authenticateToken, CommentComponent.getComment);
+router.get("/comments", authenticateToken, CommentComponent.getCommentByQuery);
+router.delete(
+  "/comments/:id",
+  authenticateToken,
+  CommentComponent.deleteComment
 );
 
 export default router;
