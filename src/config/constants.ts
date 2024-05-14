@@ -21,8 +21,10 @@ export default {
     deactivationError: "Error while deactivating user",
   },
   authenticationMessage: {
-    tokenMissing: "Please send auth token in request header",
+    tokenMissing: "Please send auth token in request headers",
+    userIdMissing: "Please send 'userId' in request headers",
     invalidToken: "Invalid token! Cannot authenticate at this moment",
+    unauthorized: "You are not authorized to perform this action",
   },
   commonServerError: {
     internal: "Internal Server Error",

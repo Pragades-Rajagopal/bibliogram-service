@@ -26,11 +26,18 @@ export const authenticateToken = (
   next: NextFunction
 ) => {
   const authHeader = req.headers["authorization"];
+  const userId = req.headers["userid"];
   const token = authHeader && authHeader.split(" ")[1];
   if (typeof token === "undefined" || token === null) {
     return res.status(constants.statusCode.unauthorized).json({
       statusCode: constants.statusCode.unauthorized,
       message: constants.authenticationMessage.tokenMissing,
+    });
+  }
+  if (typeof userId === "undefined" || userId === null) {
+    return res.status(constants.statusCode.unauthorized).json({
+      statusCode: constants.statusCode.unauthorized,
+      message: constants.authenticationMessage.userIdMissing,
     });
   }
   jwt.verify(
@@ -42,6 +49,12 @@ export const authenticateToken = (
         return res.status(constants.statusCode.forbidden).json({
           statusCode: constants.statusCode.forbidden,
           message: constants.authenticationMessage.invalidToken,
+        });
+      }
+      if (String(data["id"]) !== userId) {
+        return res.status(constants.statusCode.unauthorized).json({
+          statusCode: constants.statusCode.unauthorized,
+          message: constants.authenticationMessage.unauthorized,
         });
       }
       req.user = data;
