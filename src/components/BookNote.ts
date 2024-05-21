@@ -266,17 +266,24 @@ const getNoteModel = (
   limit?: string,
   offset?: string
 ): Promise<any> => {
-  let sql: string = `SELECT * FROM book_notes_vw`;
+  // For global notes
+  let sql: string =
+    userId || bookId || noteId
+      ? `SELECT * FROM book_notes_vw`
+      : `SELECT * FROM book_notes_vw WHERE is_private=0`;
   if (noteId) {
+    // Get note by id
     sql = sql + ` WHERE id=${noteId}`;
   }
   if (bookId && userId) {
     sql =
       sql + ` WHERE book_id=${bookId} AND user_id=${userId} AND is_private=0`;
   } else if (bookId) {
+    // Get all public notes for the given book
     sql = sql + ` WHERE book_id=${bookId} AND is_private=0`;
   } else if (userId) {
-    sql = sql + ` WHERE user_id=${userId} AND is_private=0`;
+    // Get all notes for the given user
+    sql = sql + ` WHERE user_id=${userId}`;
   }
   sql = sql + ` ORDER BY id DESC`;
   if (limit) {
