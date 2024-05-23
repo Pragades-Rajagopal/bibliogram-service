@@ -230,13 +230,18 @@ const getCommentModel = (
 ): Promise<any> => {
   let sql: string = `
     SELECT
-        c.*,
-        u.fullname AS user
+      c.*,
+      u.fullname AS user,
+      STRFTIME('%d',
+            c.created_on) || ' ' || SUBSTR('JanFebMarAprMayJunJulAugSepOctNovDec',
+            1 + 3 * STRFTIME('%m',
+            c.created_on),
+            -3) AS short_date
     FROM
-        comments c,
-        users u
+      comments c,
+      users u
     WHERE
-        c.user_id = u.id
+      c.user_id = u.id
     `;
   if (commentId) {
     sql = sql + ` AND c.id=${commentId}`;
