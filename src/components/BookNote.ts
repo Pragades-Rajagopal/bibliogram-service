@@ -285,7 +285,7 @@ const getNoteModel = (
     // Get all notes for the given user
     sql = sql + ` WHERE user_id=${userId}`;
   }
-  sql = sql + ` ORDER BY id DESC`;
+  sql = sql + ` ORDER BY modified_on DESC`;
   if (limit) {
     sql = sql + ` LIMIT ${limit}`;
   }

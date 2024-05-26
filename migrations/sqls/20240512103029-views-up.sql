@@ -23,5 +23,4 @@ FROM
 	books b
 WHERE
 	bn.book_id = b.id
-	AND bn.user_id = u.id
-	AND bn.is_private = 0;
+	AND bn.user_id = u.id;
