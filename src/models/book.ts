@@ -16,6 +16,7 @@ export interface BookNote {
   note: string;
   created_on: string;
   modified_on: string;
+  isPrivate: number;
 }
 
 export interface Comment {

@@ -6,6 +6,11 @@ export const addOrUpdateValidation = [
   body("note").exists().not().isEmpty().withMessage("note is mandatory"),
   body("userId").exists().not().isEmpty().withMessage("userId is mandatory"),
   body("bookId").exists().not().isEmpty().withMessage("bookId is mandatory"),
+  body("isPrivate")
+    .exists()
+    .not()
+    .isEmpty()
+    .withMessage("isPrivate is mandatory"),
   body("noteId").optional(),
   (request: Request, response: Response, next: NextFunction) => {
     const validationError = validationResult(request);

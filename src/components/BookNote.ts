@@ -196,12 +196,19 @@ const addNoteModel = (data: BookNote): Promise<any> => {
     .format("YYYY-MM-DD HH:mm:ss");
   const sql = `
     INSERT INTO book_notes (user_id, book_id, notes,
-    created_on, modified_on) VALUES (?,?,?,?,?)
+    created_on, modified_on, is_private) VALUES (?,?,?,?,?,?)
   `;
   return new Promise((resolve, reject): any => {
     appDB.run(
       sql,
-      [data.userId, data.bookId, data.note, currentTime, currentTime],
+      [
+        data.userId,
+        data.bookId,
+        data.note,
+        currentTime,
+        currentTime,
+        data.isPrivate,
+      ],
       (err) => {
         if (err) {
           console.error(err);
@@ -226,7 +233,7 @@ const updateNote = (data: BookNote): Promise<any> => {
     .format("YYYY-MM-DD HH:mm:ss");
   const sql = `
     UPDATE book_notes
-    SET notes=?, modified_on=?
+    SET notes=?, modified_on=?, is_private=?
     WHERE user_id=? 
     AND book_id=?
     AND id=?
@@ -234,7 +241,14 @@ const updateNote = (data: BookNote): Promise<any> => {
   return new Promise((resolve, reject): any => {
     appDB.run(
       sql,
-      [data.note, currentTime, data.userId, data.bookId, data.id],
+      [
+        data.note,
+        currentTime,
+        data.isPrivate,
+        data.userId,
+        data.bookId,
+        data.id,
+      ],
       (err) => {
         if (err) {
           reject("error at updateNote method");
