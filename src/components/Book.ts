@@ -119,6 +119,28 @@ export const getAllBooks = async (
   }
 };
 
+export const getTopBooks = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const result = await getTopBooksModel();
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.books.found,
+      count: result.length,
+      data: result,
+    });
+  } catch (error) {
+    console.error(constants.books.getTopBooksError);
+    console.error(error);
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: constants.books.getTopBooksError,
+    });
+  }
+};
+
 /**
  * Deletes books in bulk
  * @param {Request} request
@@ -245,6 +267,41 @@ const getAllBooksModel = (
       if (err) {
         console.log(err);
         reject("error at getAllBooksModel method");
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+/**
+ * Gets top books having number of notes
+ * @returns {Promise}
+ */
+const getTopBooksModel = (): Promise<any> => {
+  const sql = `
+    SELECT
+      b.*,
+      (
+      SELECT
+        COUNT(1)
+      FROM
+        book_notes bn
+      WHERE
+        bn.book_id = b.id) AS notes_count
+    FROM
+      books b
+    WHERE
+      notes_count > 0
+    ORDER BY
+      notes_count DESC,
+      name ASC 
+    LIMIT 50 
+  `;
+  return new Promise((resolve, reject): any => {
+    appDB.all(sql, [], (err, data) => {
+      if (err) {
+        reject("error at getTopBooksModel method");
       } else {
         resolve(data);
       }

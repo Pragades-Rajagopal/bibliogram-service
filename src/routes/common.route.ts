@@ -46,6 +46,7 @@ router.post(
 );
 router.get("/books/:id", authenticateToken, BookComponent.getBookById);
 router.get("/books", authenticateToken, BookComponent.getAllBooks);
+router.get("/top-books", authenticateToken, BookComponent.getTopBooks);
 router.delete(
   "/books",
   authenticateToken,

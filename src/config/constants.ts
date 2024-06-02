@@ -47,6 +47,7 @@ export default {
     found: "Book detail found",
     notFound: "Book detail not found for the given id or query",
     getError: "Error while getting book detail",
+    getTopBooksError: "Error while getting top books detail",
     deleteSuccess: "Book(s) deleted successfully",
     deleteError: "Error while deleting books",
   },
