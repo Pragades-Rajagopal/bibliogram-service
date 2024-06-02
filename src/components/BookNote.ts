@@ -137,6 +137,7 @@ export const deleteNote = async (
   try {
     const { id } = request.params;
     await deleteNoteModel(id);
+    await deleteCommentsUponDeleteNote(id);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
       message: constants.bookNote.deleteSuccess,
@@ -329,6 +330,24 @@ const deleteNoteModel = (id: string): Promise<any> => {
     appDB.run(sql, [id], (err) => {
       if (err) {
         reject("Error at deleteNote method");
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Deletes a comment
+ * @param {string} noteId
+ * @returns {Promise}
+ */
+const deleteCommentsUponDeleteNote = (noteId: string): Promise<any> => {
+  const sql = `DELETE FROM comments WHERE note_id=?`;
+  return new Promise((resolve, reject): any => {
+    appDB.run(sql, [noteId], (err) => {
+      if (err) {
+        reject("Error at deleteCommentsUponDeleteNote method");
       } else {
         resolve("success");
       }
