@@ -76,4 +76,9 @@ export default {
     deleteSuccess: "Comment deleted successfully",
     deleteFailure: "Error while deleting comment",
   },
+  search: {
+    error: "Error while searching",
+    success: "Search successful",
+    notData: "No result for the given value",
+  },
 };

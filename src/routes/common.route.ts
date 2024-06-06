@@ -5,6 +5,7 @@ import * as UserComponent from "../components/User";
 import * as BookComponent from "../components/Book";
 import * as BookNoteComponent from "../components/BookNote";
 import * as CommentComponent from "../components/Comment";
+import * as SearchComponent from "../components/Search";
 // Validations
 import * as userValidations from "../validators/user";
 import * as bookValidations from "../validators/book";
@@ -92,5 +93,10 @@ router.delete(
   authenticateToken,
   CommentComponent.deleteComment
 );
+
+/**
+ * Search routes
+ */
+router.get("/search", authenticateToken, SearchComponent.globalSearch);
 
 export default router;
