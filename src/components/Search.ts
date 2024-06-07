@@ -45,19 +45,29 @@ const searchModel = (value: string): Promise<any> => {
   const sql = `
     SELECT
         'book' as "type",
-        name as "field1",
+        b.id as "id",
+        b.name as "field1",
         '' as "field2",
         '' as "field3",
-        author as "field4",
-        '' as "field5"
+        b.author as "field4",
+        (
+        SELECT
+          COUNT(1)
+        FROM
+          book_notes bn
+        WHERE
+          bn.book_id = b.id
+        ) AS "field5"
     FROM
-        books
+        books b
     WHERE
-        LOWER(name) like '%${value}%'
-        or LOWER(author) like '%${value}%'
+        LOWER(b.name) like '%${value}%'
+      OR 
+        LOWER(b.author) like '%${value}%'
     UNION
     SELECT
         'note' as "type",
+        id as "id",
         notes as "field1",
         user as "field2",
         book_name as "field3",
