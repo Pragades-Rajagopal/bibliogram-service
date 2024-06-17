@@ -78,6 +78,26 @@ router.get(
 );
 
 /**
+ * Save note for later routes
+ */
+router.post(
+  "/save-later",
+  authenticateToken,
+  bookNoteValidations.saveNoteForLaterValidation,
+  BookNoteComponent.saveNoteForLater
+);
+router.get(
+  "/save-later/:id",
+  authenticateToken,
+  BookNoteComponent.getSavedNotesForLater
+);
+router.delete(
+  "/save-later/:noteId/:userId",
+  authenticateToken,
+  BookNoteComponent.deleteSavedNoteForLater
+);
+
+/**
  * Comment routes
  */
 router.put(

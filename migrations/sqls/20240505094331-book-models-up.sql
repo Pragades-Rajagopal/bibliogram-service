@@ -30,3 +30,11 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (note_id) REFERENCES book_notes (id)
 );
+
+CREATE TABLE IF NOT EXISTS saved_notes (
+    user_id INTEGER,
+    note_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (note_id) REFERENCES book_notes (id),
+    PRIMARY KEY (user_id, note_id)
+);

@@ -24,3 +24,19 @@ export const addOrUpdateValidation = [
     next();
   },
 ];
+
+export const saveNoteForLaterValidation = [
+  body("userId").exists().not().isEmpty().withMessage("userId is mandatory"),
+  body("noteId").exists().not().isEmpty().withMessage("noteId is mandatory"),
+  (request: Request, response: Response, next: NextFunction) => {
+    const validationError = validationResult(request);
+    if (!validationError.isEmpty()) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: validationError.mapped(),
+        error: constants.commonServerError.badRequest,
+      });
+    }
+    next();
+  },
+];

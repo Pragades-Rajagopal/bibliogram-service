@@ -26,3 +26,9 @@ export interface Comment {
   comment: string;
   created_on: string;
 }
+
+export interface SaveNote {
+  id: number;
+  userId: number;
+  noteId: number;
+}

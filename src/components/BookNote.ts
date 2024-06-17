@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import moment from "moment";
 import appDB from "../connector/database";
 import constants from "../config/constants";
-import { BookNote } from "../models/book";
+import { BookNote, SaveNote } from "../models/book";
 
 /**
  * Adds or updates note
@@ -183,6 +183,102 @@ export const updateNoteVisibility = async (
 };
 
 /**
+ * Adds or updates note
+ * @param {Request} request
+ * @param {Response} response
+ * @returns {Promise<Response>}
+ */
+export const saveNoteForLater = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const body: SaveNote = request.body;
+    await saveNoteForLaterModel(body);
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.saveNoteForLater.addSuccess,
+    });
+  } catch (error: any) {
+    console.error(constants.saveNoteForLater.addFailure);
+    console.error(error);
+    if (error.code === constants.databaseErrors.constraint) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: error.message,
+        error: constants.commonServerError.badRequest,
+        code: error.code,
+      });
+    } else {
+      return response.status(constants.statusCode.serverError).json({
+        statusCode: constants.statusCode.serverError,
+        message: error.message,
+        error: constants.saveNoteForLater.addFailure,
+        code: null,
+      });
+    }
+  }
+};
+
+export const getSavedNotesForLater = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const userId = request.params.id;
+    const data = await getSavedNotesForLaterModel(parseInt(userId, 10));
+    if (data && data.length === 0) {
+      return response.status(constants.statusCode.notFound).json({
+        statusCode: constants.statusCode.notFound,
+        message: constants.saveNoteForLater.notFound,
+        count: 0,
+        data: [],
+      });
+    }
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.saveNoteForLater.found,
+      count: data.length,
+      data: data,
+    });
+  } catch (error) {
+    console.error(constants.saveNoteForLater.getError);
+    console.error(error);
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: constants.saveNoteForLater.getError,
+    });
+  }
+};
+
+/**
+ * Deletes saved note for later
+ * @param {Request} request
+ * @param {Response} response
+ * @returns {Promise<Response>}
+ */
+export const deleteSavedNoteForLater = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const { noteId, userId } = request.params;
+    await deleteSavedNotesForLaterModel(noteId, userId);
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.saveNoteForLater.deleteSuccess,
+    });
+  } catch (error) {
+    console.error(constants.saveNoteForLater.deleteError);
+    console.error(error);
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: constants.saveNoteForLater.deleteError,
+    });
+  }
+};
+
+/**
  * Models
  */
 
@@ -213,7 +309,6 @@ const addNoteModel = (data: BookNote): Promise<any> => {
       (err) => {
         if (err) {
           console.error(err);
-
           reject("error at addNoteModel method");
         } else {
           resolve("success");
@@ -375,6 +470,92 @@ const updateNoteVisibilityModel = (id: string, flag: string): Promise<any> => {
     appDB.run(sql, [currentTime, id], (err) => {
       if (err) {
         reject("Error at updateNoteVisibilityModel method");
+      } else {
+        resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Save note for later
+ * @param {SaveNote} data
+ * @returns {Promise}
+ */
+const saveNoteForLaterModel = (data: SaveNote): Promise<any> => {
+  const sql = `
+    INSERT INTO saved_notes (user_id, note_id) VALUES (?,?)
+  `;
+  return new Promise((resolve, reject): any => {
+    appDB.run(sql, [data.userId, data.noteId], (err) => {
+      if (err) {
+        console.error("error while saving the user");
+        console.error(err.message);
+        const message =
+          err.message.split(": ")[0] === constants.databaseErrors.constraint
+            ? err.message.split("SQLITE_CONSTRAINT: ")[1]
+            : err.message.split(": ")[1];
+        const code = err.message.split(": ")[0];
+        reject({
+          flag: false,
+          message: message,
+          code: code,
+        });
+      } else {
+        resolve({
+          flag: true,
+          message: null,
+          code: null,
+        });
+      }
+    });
+  });
+};
+
+/**
+ * Get saved notes for later
+ * @param {number} userId
+ * @returns {Promise<any>}
+ */
+const getSavedNotesForLaterModel = (userId: number): Promise<any> => {
+  const sql = `
+    SELECT
+      *
+    FROM
+      book_notes_vw bnv,
+      saved_notes s
+    WHERE
+      BNV.id = s.note_id
+      AND s.user_id=?
+  `;
+  return new Promise((resolve, reject): any => {
+    appDB.all(sql, [userId], (err, data) => {
+      if (err) {
+        reject("Error at getSavedNotesForLaterModel method");
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+/**
+ * Deletes saved notes for later
+ * @param {string} noteId
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const deleteSavedNotesForLaterModel = (
+  noteId: string,
+  userId: string
+): Promise<any> => {
+  const sql = `DELETE FROM saved_notes WHERE note_id=? AND user_id=?`;
+  return new Promise((resolve, reject): any => {
+    appDB.run(sql, [noteId, userId], (err) => {
+      if (err) {
+        console.log(err);
+
+        reject("Error at deleteSavedNotesForLaterModel method");
       } else {
         resolve("success");
       }

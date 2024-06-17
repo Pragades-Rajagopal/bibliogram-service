@@ -81,4 +81,13 @@ export default {
     success: "Search successful",
     notData: "No result for the given value",
   },
+  saveNoteForLater: {
+    addSuccess: "Note saved for later",
+    addFailure: "Error while saving note for later",
+    found: "Saved for later notes found",
+    notFound: "No saved for later",
+    getError: "Error while getting saved for later note",
+    deleteSuccess: "Note unsaved successfully",
+    deleteError: "Error while removing saved notes",
+  },
 };
