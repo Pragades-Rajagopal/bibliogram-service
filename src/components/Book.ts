@@ -3,6 +3,7 @@ import moment from "moment";
 import appDB from "../connector/database";
 import { Book } from "../models/book";
 import constants from "../config/constants";
+import { isBookExists } from "../services/asset.validation";
 
 /**
  * Add books in bulk
@@ -119,6 +120,12 @@ export const getAllBooks = async (
   }
 };
 
+/**
+ * Gets the top 50 books based on the notes added
+ * @param {Request} request
+ * @param {Response} response
+ * @returns {Promise<Response>}
+ */
 export const getTopBooks = async (
   request: Request,
   response: Response

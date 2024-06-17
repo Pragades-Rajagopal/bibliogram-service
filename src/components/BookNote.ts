@@ -3,6 +3,11 @@ import moment from "moment";
 import appDB from "../connector/database";
 import constants from "../config/constants";
 import { BookNote, SaveNote } from "../models/book";
+import {
+  isBookExists,
+  isBookNoteExists,
+  isUserExists,
+} from "../services/asset.validation";
 
 /**
  * Adds or updates note
@@ -16,6 +21,15 @@ export const upsertNote = async (
 ): Promise<Response> => {
   try {
     const body: BookNote = request.body;
+    // asset validation
+    const _isBookExists: [] = await isBookExists(body.bookId);
+    const _isUserExists: [] = await isUserExists(body.userId);
+    if (_isBookExists.length === 0 || _isUserExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: `${constants.assetValidation.userNotExists} or ${constants.assetValidation.bookNotExists}`,
+      });
+    }
     // update note if it already exists
     if (body && body.id) {
       const isNoteExists: [] = await getNoteModel(body.id.toString());
@@ -136,6 +150,14 @@ export const deleteNote = async (
 ): Promise<Response> => {
   try {
     const { id } = request.params;
+    // asset validation
+    const _isBookNoteExists: [] = await isBookNoteExists(parseInt(id, 10));
+    if (_isBookNoteExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: constants.assetValidation.bookNoteNotExists,
+      });
+    }
     await deleteNoteModel(id);
     await deleteCommentsUponDeleteNote(id);
     return response.status(constants.statusCode.success).json({
@@ -165,6 +187,14 @@ export const updateNoteVisibility = async (
       return response.status(constants.statusCode.error).json({
         statusCode: constants.statusCode.error,
         message: constants.bookNote.badRequest,
+      });
+    }
+    // asset validation
+    const _isBookNoteExists: [] = await isBookNoteExists(parseInt(id, 10));
+    if (_isBookNoteExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: constants.assetValidation.bookNoteNotExists,
       });
     }
     await updateNoteVisibilityModel(id, flag);

@@ -5,6 +5,8 @@ import * as userModel from "../models/user";
 import constants from "../config/constants";
 import * as loginService from "../services/login";
 import * as middleware from "../services/middleware";
+import { GeneratePrivateKey } from "../models/user";
+import { isUserExists } from "../services/asset.validation";
 
 /**
  * Saves user into the system upon registration
@@ -18,7 +20,8 @@ export const registerUser = async (
 ): Promise<Response> => {
   try {
     let body = request.body;
-    const pKeyResult = await loginService.generatePrivateKey();
+    const pKeyResult: GeneratePrivateKey =
+      await loginService.generatePrivateKey();
     body = { ...body, privateKey: pKeyResult["hashedPKey"] };
     await saveUserModel(body);
     return response.status(constants.statusCode.success).json({
@@ -133,7 +136,17 @@ export const deactivateUser = async (
 ): Promise<Response> => {
   try {
     const tokenData = request["user"];
+    console.log(tokenData);
+
     const { userId } = request.body;
+    // asset validation
+    const _isUserExists: [] = await isUserExists(userId);
+    if (_isUserExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: constants.assetValidation.userNotExists,
+      });
+    }
     if (tokenData["id"] != userId) {
       return response.status(constants.statusCode.unauthorized).json({
         statusCode: constants.statusCode.unauthorized,

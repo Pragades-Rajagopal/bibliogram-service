@@ -90,4 +90,10 @@ export default {
     deleteSuccess: "Note unsaved successfully",
     deleteError: "Error while removing saved notes",
   },
+  assetValidation: {
+    bookNoteNotExists: "Note not found to perform this operation",
+    bookNotExists: "Book not found to perform this operation",
+    commentNotExists: "Comment not found to perform this operation",
+    userNotExists: "User not found to perform this operation",
+  },
 };

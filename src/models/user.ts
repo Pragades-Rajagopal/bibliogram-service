@@ -5,3 +5,8 @@ export interface ISaveUserRequest {
   status: number;
   createdOn: string;
 }
+
+export interface GeneratePrivateKey {
+  privateKey: string | null;
+  hashedPKey: string | null;
+}

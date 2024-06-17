@@ -2,13 +2,14 @@ import { hash, genSalt, compare } from "bcrypt";
 import { randomBytes } from "crypto";
 import appDB from "../connector/database";
 import constants from "../config/constants";
+import { GeneratePrivateKey } from "../models/user";
 const salt = 10;
 
 /**
  * Generates a private key and hashes it
- * @returns {*} result
+ * @returns {Promise<object>} result
  */
-export const generatePrivateKey = async () => {
+export const generatePrivateKey = async (): Promise<GeneratePrivateKey> => {
   try {
     const privateKey = randomBytes(24).toString("hex");
     const _genSalt = await genSalt(salt);
@@ -63,7 +64,7 @@ export const verifyCredential = async (
 /**
  * Gets encrypted private key for an username
  * @param {string} username
- * @returns {Promise}
+ * @returns {Promise<any>}
  */
 const getPrivateKey = (username: string): Promise<any> => {
   const sql = `SELECT private_key FROM users WHERE username=? AND _status=1`;

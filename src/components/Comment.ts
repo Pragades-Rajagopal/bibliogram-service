@@ -3,6 +3,11 @@ import moment from "moment";
 import appDB from "../connector/database";
 import constants from "../config/constants";
 import { Comment } from "../models/book";
+import {
+  isBookNoteExists,
+  isCommentExists,
+  isUserExists,
+} from "../services/asset.validation";
 
 /**
  * Adds or updates comment to a note
@@ -16,6 +21,15 @@ export const upsertComment = async (
 ): Promise<Response> => {
   try {
     const body: Comment = request.body;
+    // asset validation
+    const _isBookNoteExists: [] = await isBookNoteExists(body.noteId);
+    const _isUserExists: [] = await isUserExists(body.userId);
+    if (_isBookNoteExists.length === 0 || _isUserExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: `${constants.assetValidation.bookNoteNotExists} or ${constants.assetValidation.userNotExists}`,
+      });
+    }
     // update comment if it already exists
     if (body && body.id) {
       const isCommentExists: [] = await getCommentModel(body.id.toString());
@@ -136,6 +150,14 @@ export const deleteComment = async (
 ): Promise<Response> => {
   try {
     const { id } = request.params;
+    // asset validation
+    const _isCommentExists: [] = await isCommentExists(parseInt(id, 10));
+    if (_isCommentExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: constants.assetValidation.commentNotExists,
+      });
+    }
     await deleteCommentModel(id);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
