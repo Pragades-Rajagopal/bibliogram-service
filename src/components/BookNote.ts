@@ -224,6 +224,15 @@ export const saveNoteForLater = async (
 ): Promise<Response> => {
   try {
     const body: SaveNote = request.body;
+    // asset validation
+    const _isBookNoteExists: [] = await isBookNoteExists(body.noteId);
+    const _isUserExists: [] = await isUserExists(body.userId);
+    if (_isBookNoteExists.length === 0 || _isUserExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: `${constants.assetValidation.userNotExists} or ${constants.assetValidation.bookNoteNotExists}`,
+      });
+    }
     await saveNoteForLaterModel(body);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
@@ -293,6 +302,15 @@ export const deleteSavedNoteForLater = async (
 ): Promise<Response> => {
   try {
     const { noteId, userId } = request.params;
+    // asset validation
+    const _isBookNoteExists: [] = await isBookNoteExists(parseInt(noteId, 10));
+    const _isUserExists: [] = await isUserExists(parseInt(userId, 10));
+    if (_isBookNoteExists.length === 0 || _isUserExists.length === 0) {
+      return response.status(constants.statusCode.error).json({
+        statusCode: constants.statusCode.error,
+        message: `${constants.assetValidation.userNotExists} or ${constants.assetValidation.bookNoteNotExists}`,
+      });
+    }
     await deleteSavedNotesForLaterModel(noteId, userId);
     return response.status(constants.statusCode.success).json({
       statusCode: constants.statusCode.success,
@@ -550,7 +568,7 @@ const saveNoteForLaterModel = (data: SaveNote): Promise<any> => {
 const getSavedNotesForLaterModel = (userId: number): Promise<any> => {
   const sql = `
     SELECT
-      *
+      bnv.*
     FROM
       book_notes_vw bnv,
       saved_notes s

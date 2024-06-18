@@ -136,8 +136,6 @@ export const deactivateUser = async (
 ): Promise<Response> => {
   try {
     const tokenData = request["user"];
-    console.log(tokenData);
-
     const { userId } = request.body;
     // asset validation
     const _isUserExists: [] = await isUserExists(userId);
