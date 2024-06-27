@@ -326,6 +326,36 @@ export const deleteSavedNoteForLater = async (
   }
 };
 
+export const isNoteSavedForLater = async (
+  request: Request,
+  response: Response
+): Promise<Response> => {
+  try {
+    const { noteId, userId } = request.params;
+    const data: [] = await isNoteSavedForLaterModel(noteId, userId);
+    if (data && data.length === 0) {
+      return response.status(constants.statusCode.notFound).json({
+        statusCode: constants.statusCode.notFound,
+        message: constants.saveNoteForLater.notFound,
+        value: 0,
+      });
+    }
+    return response.status(constants.statusCode.success).json({
+      statusCode: constants.statusCode.success,
+      message: constants.saveNoteForLater.found,
+      value: 1,
+    });
+  } catch (error) {
+    console.error(constants.saveNoteForLater.getError);
+    console.error(error);
+    return response.status(constants.statusCode.serverError).json({
+      statusCode: constants.statusCode.serverError,
+      message: constants.saveNoteForLater.getError,
+      value: null,
+    });
+  }
+};
+
 /**
  * Models
  */
@@ -601,11 +631,32 @@ const deleteSavedNotesForLaterModel = (
   return new Promise((resolve, reject): any => {
     appDB.run(sql, [noteId, userId], (err) => {
       if (err) {
-        console.log(err);
-
         reject("Error at deleteSavedNotesForLaterModel method");
       } else {
         resolve("success");
+      }
+    });
+  });
+};
+
+/**
+ * Retrieves value if the note was saved for later
+ * @param {string} noteId
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const isNoteSavedForLaterModel = (
+  noteId: string,
+  userId: string
+): Promise<any> => {
+  const sql = `SELECT 1 as value FROM saved_notes WHERE note_id=? AND user_id=?`;
+  return new Promise((resolve, reject): any => {
+    appDB.all(sql, [noteId, userId], (err, data) => {
+      if (err) {
+        console.log(err);
+        reject("Error at isNoteSavedForLater method");
+      } else {
+        resolve(data);
       }
     });
   });

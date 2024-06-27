@@ -96,6 +96,11 @@ router.delete(
   authenticateToken,
   BookNoteComponent.deleteSavedNoteForLater
 );
+router.get(
+  "/is-saved-note/:noteId/:userId",
+  authenticateToken,
+  BookNoteComponent.isNoteSavedForLater
+);
 
 /**
  * Comment routes
